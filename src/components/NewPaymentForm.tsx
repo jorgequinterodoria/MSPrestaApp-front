@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { createPayment, fetchLoans } from '../services/api';
-import { NewPaymentFormProps, Loan } from '../types';
-import { useAuthStore } from "../store/authStore";
+import { createPayment, fetchClients, fetchLoans } from '../services/api';
+import { NewPaymentFormProps, Loan, Client } from '../types'; 
+import { formatCurrency } from '../utils/formatters';
 
 export function NewPaymentForm({ onClose }: NewPaymentFormProps) {
-  const user = useAuthStore((state) => state.user);
   const [loans, setLoans] = useState<Loan[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
     loan_id: '',
-    recorded_by: user?.id ?? '',
-    status: 'active' as 'active' | 'disabled' | 'completed',
-    amount: '',
+    amount:0,
+    interest_pay:0,
+    capital_pay:0,
+    remaining:0,
     payment_date: new Date().toISOString().split('T')[0],
-    payment_type: 'capital' as 'capital' | 'interest'
+    notes: '',
   });
 
   useEffect(() => {
@@ -28,8 +29,19 @@ export function NewPaymentForm({ onClose }: NewPaymentFormProps) {
         setError('Error al cargar los préstamos');
       }
     };
+    const loadClients = async () => {
+      try {
+        const clientsData = await fetchClients();
+        setClients(clientsData);
+      }
+      catch (err) {
+        console.error('Error al cargar los clientes:', err);
+        setError('Error al cargar los clientes');
+      }
+    }
 
     loadLoans();
+    loadClients();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,11 +52,12 @@ export function NewPaymentForm({ onClose }: NewPaymentFormProps) {
     try {
       const paymentData = {
         loan_id: formData.loan_id,
-        recorded_by: user?.id ?? '',
-        amount: parseFloat(formData.amount),
+        amount: formData.amount,
+        interest_pay: formData.interest_pay,
+        capital_pay: formData.capital_pay,
+        remaining: formData.remaining,
         payment_date: formData.payment_date,
-        payment_type: formData.payment_type,
-        status: formData.status
+        notes: formData.notes,
       };
 
       await createPayment(paymentData);
@@ -71,11 +84,14 @@ export function NewPaymentForm({ onClose }: NewPaymentFormProps) {
             required
           >
             <option value="">Seleccionar préstamo</option>
-            {loans.map((loan) => (
-              <option key={loan.id} value={loan.id}>
-                ID: {loan.id} - Monto: ${loan.amount}
-              </option>
-            ))}
+            {loans.map((loan) => {
+              const client = clients.find(c => c.id === loan.client_id);
+              return (
+                <option key={loan.id} value={loan.id}>
+                  {client ? client.full_name : 'Cliente desconocido'} - Monto: {formatCurrency(loan.current_balance)}
+                </option>
+              );
+            })}
           </select>
         </div>
 
@@ -84,11 +100,47 @@ export function NewPaymentForm({ onClose }: NewPaymentFormProps) {
           <input
             type="number"
             value={formData.amount}
-            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+            onChange={(e) => setFormData({ ...formData, amount: parseInt(e.target.value) })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             min="0"
             step="0.01"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Interés Pagado</label>
+          <input
+            type="number"
+            value={formData.interest_pay}
+            onChange={(e) => setFormData({...formData, interest_pay: parseInt(e.target.value) })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+            min="0"
+            step="1000"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Capital Pagado</label>
+          <input
+            type="number"
+            value={formData.capital_pay}
+            onChange={(e) => setFormData({...formData, capital_pay: parseInt(e.target.value) })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+            min="0"
+            step="1000"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Saldo Pendiente</label>
+          <input
+            type="number"
+            value={formData.remaining}
+            onChange={(e) => setFormData({...formData, remaining: parseInt(e.target.value) })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+            min="0"
+            step="1000"
           />
         </div>
 
@@ -102,20 +154,15 @@ export function NewPaymentForm({ onClose }: NewPaymentFormProps) {
             required
           />
         </div>
-
         <div>
-          <label className="block text-sm font-medium text-gray-700">Tipo de Pago</label>
-          <select
-            value={formData.payment_type}
-            onChange={(e) => setFormData({ ...formData, payment_type: e.target.value as 'capital' | 'interest' })}
+          <label className="block text-sm font-medium text-gray-700">Notas</label>
+          <textarea
+            value={formData.notes}
+            onChange={(e) => setFormData({...formData, notes: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
-          >
-            <option value="capital">Capital</option>
-            <option value="interest">Interés</option>
-          </select>
+          />
         </div>
-
         <div className="flex justify-end space-x-3">
           <button
             type="button"

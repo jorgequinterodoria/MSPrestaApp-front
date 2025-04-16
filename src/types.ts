@@ -40,7 +40,6 @@ export interface Payment {
   capital_pay: number;
   remaining: number;
   payment_date: string;
-  payment_type: 'capital' | 'interest';
   notes: string;
   created_at: string;
 }
