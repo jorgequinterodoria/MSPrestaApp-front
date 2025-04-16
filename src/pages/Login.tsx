@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, User } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { fetchUsers } from '../services/api';
-import { verifyPassword } from '../utils/encryption';
-import RegisterUser from '../components/RegisterUser';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
 
@@ -41,26 +38,6 @@ function Login() {
     }
   };
 
-
-  if (isRegistering) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-        <div className="bg-white p-6 md:p-8 rounded-lg shadow-md w-full max-w-md">
-          <RegisterUser />
-          <p className="text-sm text-center mt-4">
-            ¿Ya tienes una cuenta?{' '}
-            <button
-              onClick={() => setIsRegistering(false)}
-              className="text-blue-600 hover:underline"
-            >
-              Inicia sesión
-            </button>
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-6 md:p-8 rounded-lg shadow-md w-full max-w-md">
@@ -68,7 +45,7 @@ function Login() {
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Correo Electrónico
+              Usuario
             </label>
             <div className="mt-1 relative">
               <input
@@ -78,7 +55,7 @@ function Login() {
                 className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
-              <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
             </div>
           </div>
           <div>
@@ -106,15 +83,6 @@ function Login() {
             Iniciar Sesión
           </button>
         </form>
-        <p className="text-sm text-center mt-4">
-          ¿No tienes una cuenta?{' '}
-          <button
-            onClick={() => setIsRegistering(true)}
-            className="text-blue-600 hover:underline"
-          >
-            Regístrate
-          </button>
-        </p>
       </div>
     </div>
   );
