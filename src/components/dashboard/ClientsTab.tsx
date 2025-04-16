@@ -15,7 +15,9 @@ interface ClientsTabProps {
 export const ClientsTab = ({ clients, loans, onNewClient, canCreateClient, onUpdate }: ClientsTabProps) => {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  
+  // Add search state
+  const [search, setSearch] = useState('');
+
   const hasActiveLoans = (clientId: string) => {
     return loans.some(loan => loan.client_id === clientId && loan.status === 'active');
   };
@@ -83,10 +85,23 @@ export const ClientsTab = ({ clients, loans, onNewClient, canCreateClient, onUpd
     }
   ];
 
+  // Filter clients by full_name
+  const filteredClients = clients.filter(client =>
+    client.full_name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="px-2 md:px-0">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
         <h2 className="text-lg md:text-xl font-semibold">Lista de Clientes</h2>
+        {/* Search input */}
+        <input
+          type="text"
+          placeholder="Buscar por nombre..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-64 mb-2 md:mb-0 md:mr-2 px-2 py-1 border border-gray-300 rounded-md"
+        />
         {canCreateClient && (
           <button
             onClick={onNewClient}
@@ -97,9 +112,8 @@ export const ClientsTab = ({ clients, loans, onNewClient, canCreateClient, onUpd
         )}
       </div>
       <PaginatedTable 
-        data={clients} 
+        data={filteredClients} 
         columns={columns.map(col => ({
-
           ...col,
           accessor: (client: Client) => col.accessor(client) || ''
         }))} 
