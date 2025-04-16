@@ -21,8 +21,8 @@ export const PaymentsTab = ({ payments, loans, clients, onNewPayment, canCreateP
     { header: 'Cliente', accessor: (payment: Payment) => getClientName(payment) },
     { header: 'Monto', accessor: (payment: Payment) => formatCurrency(payment.amount) },
     { header: 'Fecha', accessor: (payment: Payment) => formatDate(payment.payment_date) },
-    { header: 'Intereses', accessor: (payment: Payment) => payment.interest_pay },
-    {header:'Capital', accessor:(payment:Payment)=>payment.capital_pay},
+    { header: 'Intereses', accessor: (payment: Payment) => formatCurrency(payment.interest_pay) },
+    {header:'Capital', accessor:(payment:Payment)=>formatCurrency(payment.capital_pay)},
     {header:'Saldo', accessor:(payment:Payment)=>formatCurrency(payment.remaining)},
     {header:'Notas', accessor:(payment:Payment)=>payment.notes}
   ];
