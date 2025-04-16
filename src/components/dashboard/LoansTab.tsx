@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Client, InterestRate, Loan, PaymentPeriod } from "../../types";
 import { formatCurrency } from "../../utils/formatters";
 import { PaginatedTable } from "./PaginatedTable";
@@ -19,6 +20,9 @@ export const LoansTab = ({
   onNewLoan,
   canCreateLoan,
 }: LoansTabProps) => {
+  // Add search state
+  const [search, setSearch] = useState('');
+
   const columns = [
     {
       header: "Cliente",
@@ -82,10 +86,24 @@ export const LoansTab = ({
     },
   ];
 
+  // Filter loans by client name
+  const filteredLoans = loans.filter(loan => {
+    const client = clients.find((c) => c.id === loan.client_id);
+    return client ? client.full_name.toLowerCase().includes(search.toLowerCase()) : false;
+  });
+
   return (
     <div className="px-2 md:px-0">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
         <h2 className="text-lg md:text-xl font-semibold">Préstamos Activos</h2>
+        {/* Search input */}
+        <input
+          type="text"
+          placeholder="Buscar por nombre de cliente..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-64 mb-2 md:mb-0 md:mr-2 px-2 py-1 border border-gray-300 rounded-md"
+        />
         {canCreateLoan && (
           <button
             onClick={onNewLoan}
@@ -95,7 +113,7 @@ export const LoansTab = ({
           </button>
         )}
       </div>
-      <PaginatedTable data={loans} columns={columns} />
+      <PaginatedTable data={filteredLoans} columns={columns} />
     </div>
   );
 };
