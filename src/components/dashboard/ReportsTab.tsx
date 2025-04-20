@@ -57,7 +57,7 @@ const [error] = useState<string | null>(null);
         return monthNames[monthNum - 1] || row.month;
       } 
     },
-    { header: 'Monto Total', accessor: (row: { month: string; total_amount: string }) => row.total_amount }
+    { header: 'Monto Total', accessor: (row: { month: string; total_amount: string }) => formatCurrency(parseInt(row.total_amount)) }
   ];
 
   return (
