@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Loan, Payment, Client, PaymentPeriod, InterestRate } from '../types';
-import { fetchLoans, fetchClients, fetchPayments,fetchPaymentsPeriods,fetchInterestRates } from '../services/api';
+import { fetchLoans, fetchClients, fetchPayments,fetchPaymentsPeriods,fetchInterestRates,fetchLoansByWeek } from '../services/api';
 
 interface DashboardStore {
   loans: Loan[];
@@ -8,6 +8,7 @@ interface DashboardStore {
   payments: Payment[];
   interestRates: InterestRate[]
   paymentPeriods:PaymentPeriod[];
+  loansPerWeek:Loan[]
   loading: boolean;
   error: string | null;
   fetchData: () => Promise<void>;
@@ -19,17 +20,19 @@ export const useDashboardStore = create<DashboardStore>((set) => ({
   payments: [],
   interestRates:[],
   paymentPeriods:[],
+  loansPerWeek:[],
   loading: false,
   error: null,
   fetchData: async () => {
     set({ loading: true });
     try {
-      const [loansData, clientsData, paymentsData, interestRatesData, paymentPeriodsData] = await Promise.all([
+      const [loansData, clientsData, paymentsData, interestRatesData, paymentPeriodsData, loansPerWeekData] = await Promise.all([
         fetchLoans(),
         fetchClients(),
         fetchPayments(),
         fetchInterestRates(),
         fetchPaymentsPeriods(),
+        fetchLoansByWeek(),
       ]);
       set({
         loans: loansData,
@@ -37,6 +40,7 @@ export const useDashboardStore = create<DashboardStore>((set) => ({
         payments: paymentsData,
         interestRates:interestRatesData,
         paymentPeriods:paymentPeriodsData,
+        loansPerWeek:loansPerWeekData,
         loading: false,
       });
     } catch (error) {

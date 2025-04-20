@@ -11,6 +11,7 @@ import Loading from "../components/Loading";
 import { LoansTab } from "../components/dashboard/LoansTab";
 import { ClientsTab } from "../components/dashboard/ClientsTab";
 import { PaymentsTab } from "../components/dashboard/PaymentsTab";
+import { LoansPerWeekTab} from "../components/dashboard/LoansPerWeekTab"
 
 
 function Dashboard() {
@@ -19,7 +20,7 @@ function Dashboard() {
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [showNewPaymentModal, setShowNewPaymentModal] = useState(false);
   
-  const { loans, clients, payments, interestRates,paymentPeriods, loading, error, fetchData } = useDashboardStore();
+  const { loans, clients, payments, interestRates,paymentPeriods, loansPerWeek, loading, error, fetchData } = useDashboardStore();
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
   const { can } = usePermissions();
@@ -70,7 +71,16 @@ function Dashboard() {
             onNewPayment={() => setShowNewPaymentModal(true)}
             canCreatePayment={can("create", "payment")}
           />
-        );  
+        );
+        case "pendientes":
+          return(
+            <LoansPerWeekTab
+              paymentPeriods={paymentPeriods}
+              loansPerWeek={loansPerWeek}
+              clients={clients}
+              interestRates={interestRates}
+            />
+          )  
       default:
         return null;
     }
@@ -151,15 +161,15 @@ function Dashboard() {
 
               {can("read", "debt") && (
                 <button
-                  onClick={() => setActiveTab("moras")}
+                  onClick={() => setActiveTab("pendientes")}
                   className={`flex items-center px-4 py-2 rounded-md ${
-                    activeTab === "moras"
+                    activeTab === "pendientes"
                       ? "bg-blue-600 text-white"
                       : "bg-white text-gray-700 hover:bg-gray-50"
                   }`}
                 >
                   <AlertCircle className="h-5 w-5 mr-2" />
-                  Gestión de Mora
+                  Pendientes de la Semana
                 </button>
               )}
 

@@ -69,6 +69,11 @@ export const fetchLoans = async (): Promise<Loan[]> => {
   return response.data;
 };
 
+export const fetchLoansByWeek = async(): Promise<Loan[]> =>{
+  const response = await axios.get(`${API_URL}/loans/by-current-week`)
+  return response.data
+}
+
 export const fetchLoanById = async (id: string): Promise<Loan> => {
   const response = await axios.get(`${API_URL}/loans/${id}`);
   return response.data;
