@@ -74,6 +74,16 @@ export const fetchLoansByWeek = async(): Promise<Loan[]> =>{
   return response.data
 }
 
+export const fetchCountLoans = async(): Promise<number> =>{
+  const response = await axios.get(`${API_URL}/loans/total`)
+  return response.data.total
+}
+
+export const fetchTotalLoansAmount = async(): Promise<number> =>{
+  const response = await axios.get(`${API_URL}/loans/total-amount`)
+  return response.data.total_amount
+}
+
 export const fetchLoanById = async (id: string): Promise<Loan> => {
   const response = await axios.get(`${API_URL}/loans/${id}`);
   return response.data;
@@ -99,6 +109,11 @@ export const fetchPayments = async (): Promise<Payment[]> => {
   const response = await axios.get(`${API_URL}/payments`);
   return response.data;
 };
+
+export const fetchPaymentsPerMonth = async(): Promise<{month: string, total_amount: string}[]> => {
+  const response = await axios.get(`${API_URL}/payments/total`);
+  return response.data;
+}
 
 export const fetchPaymentsByLoanId = async (loanId: string): Promise<Payment[]> => {
   const response = await axios.get(`${API_URL}/payments/loan/${loanId}`);

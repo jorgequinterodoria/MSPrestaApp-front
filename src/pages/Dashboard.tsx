@@ -12,6 +12,7 @@ import { LoansTab } from "../components/dashboard/LoansTab";
 import { ClientsTab } from "../components/dashboard/ClientsTab";
 import { PaymentsTab } from "../components/dashboard/PaymentsTab";
 import { LoansPerWeekTab} from "../components/dashboard/LoansPerWeekTab"
+import { ReportsTab } from "../components/dashboard/ReportsTab";
 
 
 function Dashboard() {
@@ -20,7 +21,7 @@ function Dashboard() {
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [showNewPaymentModal, setShowNewPaymentModal] = useState(false);
   
-  const { loans, clients, payments, interestRates,paymentPeriods, loansPerWeek, loading, error, fetchData } = useDashboardStore();
+  const { loans, clients, payments, interestRates,paymentPeriods, loansPerWeek, totalLoans, totalLoansAmount, paymentsPerMonth, loading, error, fetchData } = useDashboardStore();
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
   const { can } = usePermissions();
@@ -79,6 +80,14 @@ function Dashboard() {
               loansPerWeek={loansPerWeek}
               clients={clients}
               interestRates={interestRates}
+            />
+          )
+        case "reportes":
+          return(
+            <ReportsTab
+              totalLoans={totalLoans}
+              totalLoansAmount={totalLoansAmount}
+              paymentsPerMonth={paymentsPerMonth}
             />
           )  
       default:
