@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Client, InterestRate, Loan, PaymentPeriod } from "../../types";
-import { formatCurrency } from "../../utils/formatters";
+import { formatCurrency, formatDateWithMonthName } from "../../utils/formatters";
 import { PaginatedTable } from "./PaginatedTable";
 
 interface LoansTabProps {
@@ -64,11 +64,11 @@ export const LoansTab = ({
     },
     {
       header: "Fecha de Creación",
-      accessor: (loan: Loan) => new Date(loan.start_date).toLocaleDateString(),
+      accessor: (loan: Loan) => formatDateWithMonthName(loan.start_date),
     },
     {
       header: "Fecha de Finalización",
-      accessor: (loan: Loan) => new Date(loan.end_date).toLocaleDateString(),
+      accessor: (loan: Loan) => formatDateWithMonthName(loan.end_date),
     },
     {
       header: "Estado",

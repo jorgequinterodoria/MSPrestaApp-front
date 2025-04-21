@@ -1,6 +1,6 @@
 import { Payment, Loan, Client } from '../../types';
 import { PaginatedTable } from './PaginatedTable';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import { formatCurrency, formatDateWithMonthName } from '../../utils/formatters';
 
 interface PaymentsTabProps {
   payments: Payment[];
@@ -20,7 +20,7 @@ export const PaymentsTab = ({ payments, loans, clients, onNewPayment, canCreateP
   const columns = [
     { header: 'Cliente', accessor: (payment: Payment) => getClientName(payment) },
     { header: 'Monto', accessor: (payment: Payment) => formatCurrency(payment.amount) },
-    { header: 'Fecha', accessor: (payment: Payment) => formatDate(payment.payment_date) },
+    { header: 'Fecha', accessor: (payment: Payment) => formatDateWithMonthName(payment.payment_date) },
     { header: 'Intereses', accessor: (payment: Payment) => formatCurrency(payment.interest_pay) },
     {header:'Capital', accessor:(payment:Payment)=>formatCurrency(payment.capital_pay)},
     {header:'Saldo', accessor:(payment:Payment)=>formatCurrency(payment.remaining)},

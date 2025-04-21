@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Client, InterestRate, Loan, PaymentPeriod } from "../../types";
-import { formatCurrency } from "../../utils/formatters";
+import { formatCurrency, formatDateWithMonthName } from "../../utils/formatters";
 import { PaginatedTable } from "./PaginatedTable";
 
 interface LoansTabProps {
@@ -13,7 +13,6 @@ interface LoansTabProps {
 export const LoansPerWeekTab = ({
   loansPerWeek,
   clients,
-  paymentPeriods,
   interestRates,
 }: LoansTabProps) => {
   // Add search state
@@ -60,26 +59,8 @@ export const LoansPerWeekTab = ({
     },
     {
       header: "Fecha de Creación",
-      accessor: (loanPerWeek: Loan) => new Date(loanPerWeek.start_date).toLocaleDateString(),
-    },
-    {
-      header: "Fecha de Finalización",
-      accessor: (loanPerWeek: Loan) => new Date(loanPerWeek.end_date).toLocaleDateString(),
-    },
-    {
-      header: "Estado",
-      accessor: (loanPerWeek: Loan) =>
-        loanPerWeek.status === "active" ? "Activo" : "Inactivo",
-    },
-    {
-      header: "Frecuencia de pago",
-      accessor: (loanPerWeek: Loan) => {
-        const paymentPeriod = paymentPeriods.find(
-          (p) => p.id === loanPerWeek.payment_period_id
-        );
-        return paymentPeriod ? paymentPeriod.name : "Frecuencia no encontrada";
-      },
-    },
+      accessor: (loanPerWeek: Loan) => formatDateWithMonthName(loanPerWeek.start_date),
+    }
   ];
 
   // Filter loans by client name
